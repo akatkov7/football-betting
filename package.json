@@ -1,0 +1,23 @@
+{
+  "name": "football-betting",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start-ganache": "npx ganache-cli --deterministic >> ganache.log 2>&1 &",
+    "test": "npx truffle test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@openzeppelin/contracts": "^3.3.0",
+    "@openzeppelin/test-helpers": "^0.5.10",
+    "chai": "^4.2.0",
+    "ganache-cli": "^6.12.1",
+    "truffle": "^5.1.61"
+  }
+}
