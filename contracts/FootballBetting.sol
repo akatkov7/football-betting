@@ -26,6 +26,7 @@ contract FootballBetting {
   }
 
   mapping (address => Bet[]) bets;
+  mapping (address => uint) betIdByCreator;
 
   event BetCreated(address creator, uint id, uint amount, uint oddsNumerator, uint oddsDenominator, bytes7 description, bytes3 winner);
   event BetAccepted(address creator, uint id, address acceptor);
@@ -47,7 +48,8 @@ contract FootballBetting {
 
     address betCreator = msg.sender;
     uint totalAmount = msg.value;
-    uint betId = bets[betCreator].length;
+    uint betId = betIdByCreator[betCreator];
+    betIdByCreator[betCreator] += 1;
     Bet memory bet = Bet(betCreator, betId, betAmount, oddsNumerator, oddsDenominator, description, winner, address(0), true);
     
     // make sure that the value passed in can cover a loss based on the odds
@@ -104,6 +106,10 @@ contract FootballBetting {
         // remove bet from storage
         creatorBets[i] = creatorBets[creatorBets.length - 1];
         creatorBets.pop();
+        // reset betId sequence when all bets are removed
+        if (creatorBets.length == 0) {
+          betIdByCreator[betCreator] = 0;
+        }
         break;
       }
     }
@@ -144,6 +150,10 @@ contract FootballBetting {
         // remove bet from storage
         creatorBets[i] = creatorBets[creatorBets.length - 1];
         creatorBets.pop();
+        // reset betId sequence when all bets are removed
+        if (creatorBets.length == 0) {
+          betIdByCreator[betCreator] = 0;
+        }
         break;
       }
     }

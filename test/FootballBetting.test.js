@@ -121,6 +121,37 @@ contract('FootballBetting', function ([ owner, accountA, accountB ]) {
     expect(await this.contract.getNumberOfBets({ from: accountA })).to.be.bignumber.equal(new BN(1));
   });
 
+  it('can create multiple bets', async function () {
+    const bet1Receipt = await this.contract.createBet(100, 3, 2, toHexString("CLE@PIT"), toHexString("PIT"), { from: accountA, value: 150 });    
+    expectEvent(bet1Receipt, 'BetCreated', { id: new BN(0) });
+    expect(await this.contract.getNumberOfBets({ from: accountA })).to.be.bignumber.equal(new BN(1));
+
+    const bet2Receipt = await this.contract.createBet(100, 3, 2, toHexString("CLE@PIT"), toHexString("PIT"), { from: accountA, value: 150 });
+    expectEvent(bet2Receipt, 'BetCreated', { id: new BN(1) });
+    expect(await this.contract.getNumberOfBets({ from: accountA })).to.be.bignumber.equal(new BN(2));
+
+    const bet3Receipt = await this.contract.createBet(100, 3, 2, toHexString("CLE@PIT"), toHexString("PIT"), { from: accountA, value: 150 });
+    expectEvent(bet3Receipt, 'BetCreated', { id: new BN(2) });
+    expect(await this.contract.getNumberOfBets({ from: accountA })).to.be.bignumber.equal(new BN(3));
+
+    await this.contract.withdrawBet(0, { from: accountA });
+    expect(await this.contract.getNumberOfBets({ from: accountA })).to.be.bignumber.equal(new BN(2));
+
+    const bet4Receipt = await this.contract.createBet(100, 3, 2, toHexString("CLE@PIT"), toHexString("PIT"), { from: accountA, value: 150 });
+    expectEvent(bet4Receipt, 'BetCreated', { id: new BN(3) });
+    expect(await this.contract.getNumberOfBets({ from: accountA })).to.be.bignumber.equal(new BN(3));
+
+    expectRevert(this.contract.withdrawBet(0, { from: accountA }), "unknown bet");
+    expect(await this.contract.getNumberOfBets({ from: accountA })).to.be.bignumber.equal(new BN(3));
+    await this.contract.withdrawBet(1, { from: accountA });
+    await this.contract.withdrawBet(2, { from: accountA });
+    await this.contract.withdrawBet(3, { from: accountA });
+    expect(await this.contract.getNumberOfBets({ from: accountA })).to.be.bignumber.equal(new BN(0));
+
+    const bet5Receipt = await this.contract.createBet(100, 3, 2, toHexString("CLE@PIT"), toHexString("PIT"), { from: accountA, value: 150 });
+    expectEvent(bet5Receipt, 'BetCreated', { id: new BN(0) });
+  });
+
   // testing accept
   it('cannot accept nonexistent bet', async function () {
     expectRevert(this.contract.acceptBet(accountA, 0, { from: accountB }), "unknown bet");
