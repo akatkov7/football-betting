@@ -4,7 +4,6 @@ const { expect } = require('chai');
 // Import utilities from Test Helpers
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const { web3 } = require('@openzeppelin/test-helpers/src/setup');
-const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 
 // Load compiled artifacts
 const FootballBetting = artifacts.require('FootballBetting');
